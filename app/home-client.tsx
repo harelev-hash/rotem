@@ -60,7 +60,7 @@ export default function HomeClient({ userName }: Props) {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-blue-100 flex flex-col items-center px-4 pb-10 fade-in">
+    <main className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-100 flex flex-col items-center px-4 pb-10 fade-in">
       {/* Header */}
       <header className="w-full max-w-md pt-10 pb-6 flex flex-col items-center gap-1">
         <button
@@ -74,10 +74,10 @@ export default function HomeClient({ userName }: Props) {
           📚
         </button>
         {userName && (
-          <p className="text-blue-400 font-medium text-base mt-1">שלום, {userName}!</p>
+          <p className="text-purple-400 font-medium text-base mt-1">שלום, {userName}!</p>
         )}
-        <h1 className="text-3xl font-extrabold text-blue-800 mt-1">קוראים יחד</h1>
-        <p className="text-slate-500 text-base">איזה סיפור תרצי היום?</p>
+        <h1 className="text-3xl font-extrabold text-purple-800 mt-1">קוראים יחד</h1>
+        <p className="text-purple-400 text-base">איזה סיפור תרצי היום?</p>
       </header>
 
       {/* Error */}
@@ -112,13 +112,21 @@ export default function HomeClient({ userName }: Props) {
         ))}
       </div>
 
-      {/* Library link */}
-      <Link
-        href="/library"
-        className="mt-8 flex items-center gap-2 text-blue-600 font-semibold text-lg hover:underline focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-lg px-2 py-1"
-      >
-        <span>📖</span> הספרייה שלי
-      </Link>
+      {/* Bottom links */}
+      <div className="mt-8 flex gap-6">
+        <Link
+          href="/library"
+          className="flex items-center gap-2 text-purple-600 font-semibold text-lg hover:underline focus:outline-none focus:ring-2 focus:ring-purple-300 rounded-lg px-2 py-1"
+        >
+          <span>📖</span> הספרייה
+        </Link>
+        <Link
+          href="/vocabulary"
+          className="flex items-center gap-2 text-purple-600 font-semibold text-lg hover:underline focus:outline-none focus:ring-2 focus:ring-purple-300 rounded-lg px-2 py-1"
+        >
+          <span>💎</span> אוצר מילים
+        </Link>
+      </div>
     </main>
   );
 }

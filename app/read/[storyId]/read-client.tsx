@@ -38,7 +38,7 @@ export default function ReadClient({ story }: Props) {
   if (done) return null;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col fade-in">
+    <main className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex flex-col fade-in">
       {/* Progress dots */}
       <div className="flex justify-center gap-2 pt-6 pb-2">
         {sentences.map((_, i) => (
@@ -46,7 +46,7 @@ export default function ReadClient({ story }: Props) {
             key={i}
             className={`
               rounded-full transition-all duration-300
-              ${i === index ? 'w-5 h-5 bg-blue-500' : i < index ? 'w-4 h-4 bg-blue-300' : 'w-4 h-4 bg-slate-200'}
+              ${i === index ? 'w-5 h-5 bg-purple-500' : i < index ? 'w-4 h-4 bg-purple-300' : 'w-4 h-4 bg-slate-200'}
             `}
           />
         ))}
@@ -79,10 +79,10 @@ export default function ReadClient({ story }: Props) {
         <button
           onClick={handleNext}
           className="
-            bg-blue-500 hover:bg-blue-600 active:scale-95
+            bg-purple-500 hover:bg-purple-600 active:scale-95
             text-white font-bold text-xl rounded-2xl
             px-8 py-4 shadow-lg transition-all duration-150
-            focus:outline-none focus:ring-4 focus:ring-blue-300
+            focus:outline-none focus:ring-4 focus:ring-purple-300
             min-w-[140px]
           "
         >

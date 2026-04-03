@@ -48,6 +48,13 @@ export interface SessionRating {
   created_at: string;
 }
 
+export interface VocabularyWord {
+  id: string;
+  user_id: string;
+  word: string;
+  added_at: string;
+}
+
 export interface AppUser {
   id: string;
   name: string;

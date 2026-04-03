@@ -1,14 +1,16 @@
 import { supabase, DEFAULT_USER_ID } from '@/lib/supabase';
 import Link from 'next/link';
 import VowelProgressBar from '@/components/VowelProgressBar';
+import DeleteStoryButton from '@/components/DeleteStoryButton';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ParentDashboard() {
-  const [{ data: vowels }, { data: stories }, { data: ratings }] = await Promise.all([
+  const [{ data: vowels }, { data: stories }, { data: ratings }, { data: vocabWords }] = await Promise.all([
     supabase.from('vowel_progress').select('*').eq('user_id', DEFAULT_USER_ID).order('vowel_name'),
     supabase.from('stories').select('id, topic, topic_emoji, created_at, completed').eq('user_id', DEFAULT_USER_ID).order('created_at', { ascending: false }).limit(10),
     supabase.from('session_ratings').select('story_id, rating').order('created_at', { ascending: false }),
+    supabase.from('vocabulary_words').select('id').eq('user_id', DEFAULT_USER_ID),
   ]);
 
   const completedCount = (stories ?? []).filter(s => s.completed).length;
@@ -28,14 +30,18 @@ export default async function ParentDashboard() {
       <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center border border-slate-100">
             <p className="text-3xl font-bold text-blue-600">{completedCount}</p>
-            <p className="text-sm text-slate-500">סיפורים הושלמו</p>
+            <p className="text-sm text-slate-500">סיפורים</p>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center border border-slate-100">
             <p className="text-3xl font-bold text-purple-600">{(vowels ?? []).filter(v => v.is_active).length}</p>
-            <p className="text-sm text-slate-500">תנועות פעילות</p>
+            <p className="text-sm text-slate-500">תנועות</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm text-center border border-slate-100">
+            <p className="text-3xl font-bold text-amber-500">{(vocabWords ?? []).length}</p>
+            <p className="text-sm text-slate-500">מילים</p>
           </div>
         </div>
 
@@ -49,6 +55,17 @@ export default async function ParentDashboard() {
             <div>
               <p className="font-bold text-slate-700">הגדרות תנועות</p>
               <p className="text-sm text-slate-400">הפעלה, כיבוי ורמת שליטה</p>
+            </div>
+            <span className="mr-auto text-slate-300 text-xl">←</span>
+          </Link>
+          <Link
+            href="/parent/vocabulary"
+            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3 hover:bg-slate-50 transition-colors"
+          >
+            <span className="text-3xl">💎</span>
+            <div>
+              <p className="font-bold text-slate-700">ניהול אוצר מילים</p>
+              <p className="text-sm text-slate-400">הסרת מילים שנרכשו</p>
             </div>
             <span className="mr-auto text-slate-300 text-xl">←</span>
           </Link>
@@ -99,6 +116,7 @@ export default async function ParentDashboard() {
                         : <span className="text-slate-300 text-xs">לא הושלם</span>
                     }
                   </div>
+                  <DeleteStoryButton storyId={s.id} />
                 </div>
               ))}
             </div>
