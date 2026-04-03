@@ -1,7 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { SentenceItem, VowelProgress } from './supabase';
 
-const client = new Anthropic();
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
 export async function generateStory(
   topic: string,
@@ -17,25 +17,20 @@ export async function generateStory(
     ? `מילים שהילדה כבר מכירה (השתמש בהן): ${knownWords.slice(0, 20).join(', ')}.`
     : '';
 
-  const systemPrompt = `אתה מומחה בחינוך מיוחד ולימוד קריאה עברית לילדים עם אוטיזם.
-אתה יוצר סיפורים קצרים בשיטת הפירמידה: כל משפט מוסיף בדיוק מילה חדשה אחת על המשפט הקודם.
-כל הטקסט חייב להיות מנוקד במלואו.
-השתמש רק בתנועות הפעילות שצוינו — אל תשתמש בתנועות אחרות.
-המילים צריכות להיות קונקרטיות, ויזואליות, ומתאימות לגיל 10.`;
-
-  const userPrompt = `צור סיפור קצר על הנושא: ${topicHebrew} (${topic}).
+  const prompt = `אתה מומחה בחינוך מיוחד ולימוד קריאה עברית לילדים עם אוטיזם.
+צור סיפור קצר על הנושא: ${topicHebrew} (${topic}).
 
 תנועות פעילות: ${vowelList}.
 ${knownWordsText}
 
 הנחיות:
-1. 5-7 משפטים בשיטת הפירמידה (כל משפט = המשפט הקודם + מילה חדשה אחת)
+1. 5-7 משפטים בשיטת הפירמידה — כל משפט = המשפט הקודם + מילה חדשה אחת בדיוק
 2. כל הטקסט מנוקד במלואו
 3. מילים קונקרטיות שקל לצייר
 4. מתאים לילדה בת 10, לא ברמת תינוק
-5. ודא שכל מילה חדשה מכילה רק את התנועות הפעילות
+5. כל מילה חדשה מכילה רק את התנועות הפעילות
 
-החזר JSON בלבד, מערך של אובייקטים:
+החזר JSON בלבד, ללא הסברים, ללא markdown, רק מערך:
 [
   { "sentence": "...", "new_word": "...", "image_description": "..." },
   ...
@@ -43,36 +38,32 @@ ${knownWordsText}
 
 sentence - המשפט המלא מנוקד
 new_word - המילה החדשה שנוספה (מנוקדת)
-image_description - תיאור קצר באנגלית לאיור (לשימוש עתידי)`;
+image_description - תיאור קצר באנגלית לאיור`;
+
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    generationConfig: {
+      temperature: 0.7,
+      responseMimeType: 'application/json',
+    },
+  });
 
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const message = await client.messages.create({
-        model: 'claude-opus-4-5',
-        max_tokens: 1024,
-        temperature: 0.7,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
 
-      const text = message.content[0].type === 'text' ? message.content[0].text : '';
-
-      // Extract JSON array from response
       const jsonMatch = text.match(/\[[\s\S]*\]/);
       if (!jsonMatch) throw new Error('No JSON array found in response');
 
       const parsed: SentenceItem[] = JSON.parse(jsonMatch[0]);
-
-      if (!Array.isArray(parsed) || parsed.length < 3) {
-        throw new Error('Invalid story format');
-      }
+      if (!Array.isArray(parsed) || parsed.length < 3) throw new Error('Invalid story format');
 
       return parsed;
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
-      // Wait a bit before retry
       if (attempt < 2) await new Promise(r => setTimeout(r, 1000));
     }
   }
