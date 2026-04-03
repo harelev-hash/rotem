@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const knownWords = (knownWordsRows ?? []).map((r: { word: string }) => r.word);
 
     // Generate story
-    const sentences = await generateStory(topic, topicHebrew, vowels, knownWords);
+    const { sentences, questions } = await generateStory(topic, topicHebrew, vowels, knownWords);
 
     // Save story to DB
     const { data: story, error: storyErr } = await supabase
@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
         topic: topicHebrew,
         topic_emoji: topicEmoji,
         sentences_json: sentences,
+        questions_json: questions,
         completed: false,
       })
       .select()

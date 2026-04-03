@@ -30,6 +30,7 @@ export interface Story {
   topic: string;
   topic_emoji: string;
   sentences_json: SentenceItem[];
+  questions_json: StoryQuestion[];
   completed: boolean;
   created_at: string;
 }
@@ -39,6 +40,21 @@ export interface SentenceItem {
   new_word: string;
   image_description: string;
 }
+
+export interface ComprehensionQuestion {
+  type: 'comprehension';
+  question: string;
+  options: string[];
+  correct: number; // index into options (0, 1, or 2)
+}
+
+export interface FirstLetterQuestion {
+  type: 'first_letter';
+  word: string;   // with niqqud
+  answer: string; // single Hebrew letter, no niqqud
+}
+
+export type StoryQuestion = ComprehensionQuestion | FirstLetterQuestion;
 
 export interface SessionRating {
   id: string;
