@@ -40,15 +40,13 @@ sentence - המשפט המלא מנוקד
 new_word - המילה החדשה שנוספה (מנוקדת)
 image_description - תיאור קצר באנגלית לאיור`;
 
-  const model = genAI.getGenerativeModel(
-    {
-      model: 'gemini-1.5-flash',
-      generationConfig: {
-        temperature: 0.7,
-      },
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    generationConfig: {
+      temperature: 0.7,
+      responseMimeType: 'application/json',
     },
-    { apiVersion: 'v1' }
-  );
+  });
 
   let lastError: Error | null = null;
 
