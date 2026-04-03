@@ -45,7 +45,6 @@ image_description - תיאור קצר באנגלית לאיור`;
       model: 'gemini-1.5-flash',
       generationConfig: {
         temperature: 0.7,
-        responseMimeType: 'application/json',
       },
     },
     { apiVersion: 'v1' }
