@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export default async function ParentVocabularyPage() {
   const { data: words } = await supabase
     .from('vocabulary_words')
-    .select('id, word, added_at')
+    .select('id, user_id, word, added_at')
     .eq('user_id', DEFAULT_USER_ID)
     .order('added_at', { ascending: false });
 
