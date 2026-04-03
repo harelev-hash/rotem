@@ -41,7 +41,7 @@ new_word - המילה החדשה שנוספה (מנוקדת)
 image_description - תיאור קצר באנגלית לאיור`;
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-lite',
+    model: 'gemini-2.0-flash',
     generationConfig: {
       temperature: 0.7,
       responseMimeType: 'application/json',
