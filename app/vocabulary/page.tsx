@@ -1,5 +1,6 @@
 import { supabase, DEFAULT_USER_ID } from '@/lib/supabase';
 import Link from 'next/link';
+import CreateStoryWithWordButton from '@/components/CreateStoryWithWordButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,9 +34,10 @@ export default async function VocabularyPage() {
             {words.map(w => (
               <div
                 key={w.id}
-                className="bg-white border-2 border-purple-200 text-purple-800 font-bold text-xl px-5 py-3 rounded-2xl shadow-sm"
+                className="bg-white border-2 border-purple-200 rounded-2xl shadow-sm flex flex-col items-center px-5 py-3 gap-1"
               >
-                {w.word}
+                <span className="text-purple-800 font-bold text-xl">{w.word}</span>
+                <CreateStoryWithWordButton word={w.word} />
               </div>
             ))}
           </div>

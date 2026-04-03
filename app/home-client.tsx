@@ -27,6 +27,7 @@ export default function HomeClient({ userName }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [customWord, setCustomWord] = useState('');
 
   // Long-press on logo (1.5s) → parent mode
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -35,6 +36,31 @@ export default function HomeClient({ userName }: Props) {
   };
   const handleLogoRelease = () => {
     if (pressTimer.current) clearTimeout(pressTimer.current);
+  };
+
+  const handleCustomWord = async () => {
+    const word = customWord.trim();
+    if (!word) return;
+    setLoading('custom');
+    setError(null);
+    try {
+      const res = await fetch('/api/generate-story', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: 'custom',
+          topicHebrew: word,
+          topicEmoji: '✏️',
+          customWord: word,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'שגיאה');
+      router.push(`/read/${data.storyId}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'שגיאה ביצירת הסיפור. נסי שוב.');
+      setLoading(null);
+    }
   };
 
   const handleTopic = async (topic: typeof TOPICS[0]) => {
@@ -91,12 +117,37 @@ export default function HomeClient({ userName }: Props) {
       {loading && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4">
           <div className="text-5xl animate-bounce">
-            {TOPICS.find(t => t.id === loading)?.emoji}
+            {loading === 'custom' ? '✏️' : TOPICS.find(t => t.id === loading)?.emoji}
           </div>
           <p className="text-xl font-bold text-blue-700">יוצרים סיפור...</p>
           <p className="text-slate-400 text-sm">זה עשוי לקחת כמה שניות</p>
         </div>
       )}
+
+      {/* Custom word input */}
+      <div className="w-full max-w-md mb-2">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            dir="rtl"
+            value={customWord}
+            onChange={e => setCustomWord(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleCustomWord()}
+            placeholder="הקלידי מילה..."
+            disabled={!!loading}
+            className="flex-1 border-2 border-purple-200 rounded-2xl px-4 py-3 text-lg bg-white text-purple-900 placeholder-purple-200 focus:outline-none focus:border-purple-500 disabled:opacity-50"
+          />
+          <button
+            onClick={handleCustomWord}
+            disabled={!customWord.trim() || !!loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl px-5 py-3 text-lg transition-all active:scale-95 disabled:opacity-40"
+          >
+            ✏️ צרי
+          </button>
+        </div>
+      </div>
+
+      <div className="text-purple-300 text-sm mb-2 select-none">— או בחרי נושא —</div>
 
       {/* Topic grid */}
       <div className="w-full max-w-md grid grid-cols-2 gap-4">

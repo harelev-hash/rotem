@@ -5,10 +5,11 @@ import { supabase, DEFAULT_USER_ID } from '@/lib/supabase';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { topic, topicHebrew, topicEmoji } = body as {
+    const { topic, topicHebrew, topicEmoji, customWord } = body as {
       topic: string;
       topicHebrew: string;
       topicEmoji: string;
+      customWord?: string;
     };
 
     if (!topic || !topicHebrew) {
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     const knownWords = (knownWordsRows ?? []).map((r: { word: string }) => r.word);
 
     // Generate story
-    const { sentences, questions } = await generateStory(topic, topicHebrew, vowels, knownWords);
+    const { sentences, questions } = await generateStory(topic, topicHebrew, vowels, knownWords, customWord);
 
     // Save story to DB
     const { data: story, error: storyErr } = await supabase

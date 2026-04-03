@@ -12,7 +12,8 @@ export async function generateStory(
   topic: string,
   topicHebrew: string,
   activeVowels: VowelProgress[],
-  knownWords: string[] = []
+  knownWords: string[] = [],
+  customWord?: string
 ): Promise<StoryResult> {
   const vowelList = activeVowels
     .map(v => `${v.vowel_name} (${v.vowel_symbol})`)
@@ -28,7 +29,7 @@ export async function generateStory(
 תנועות פעילות: ${vowelList}.
 ${knownWordsText}
 
-הנחיות לסיפור:
+${customWord ? `מילה מיוחדת לשילוב בסיפור: "${customWord}" — שלב אותה בצורה טבעית, ניקד אותה נכון לחלוטין.\n` : ''}הנחיות לסיפור:
 1. 5-7 משפטים בשיטת הפירמידה — כל משפט = המשפט הקודם + מילה חדשה אחת בדיוק
 2. כל הטקסט מנוקד במלואו
 3. מילים קונקרטיות שקל לצייר
